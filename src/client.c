@@ -11,81 +11,71 @@
 /* ************************************************************************** */
 
 #include <signal.h>
-#include "../ft_printf/ft_printf.h"
+#include "ft_printf.h"
 
-int	g_index = 1;
+int	g_flag = 1;
 
 int	ft_atoi(const char *str)
 {
-	size_t	i;
-	long	result;
 	int		sign;
+	int		result;
+	size_t	i;
 
 	i = 0;
-	sign = 1;
-	while (str[i] == ' ' || (str[i] >= 9 && str[i] <= 13))
+	while ((str[i] >= '\t' && str[i] <= '\r') || str[i] == ' ')
 		i++;
-	if (str[i] == '-' || str[i] == '+')
+	sign = 1;
+	if (str[i] == '+')
+		i++;
+	else if (str[i] == '-')
 	{
-		if (str[i] == '-')
-			sign = -1;
+		sign = -1;
 		i++;
 	}
 	result = 0;
 	while (str[i] >= 48 && str[i] <= 57)
 	{
-		result = result * 10 + str[i] - 48;
-		if (result != ((result * 10 + str[i] - 48) / 10) && sign == -1)
-			return (0);
-		if (result != ((result * 10 + str[i] - 48) / 10) && sign == 1)
-			return (-1);
+		result = result * 10 + (str[i] - '0');
 		i++;
 	}
-	return ((int)(result * sign));
+	return (result * sign);
 }
 
-int	send_bi(char symbol, int pid)
+void	send_bi(char symbol, int pid)
 {
 	int	i;
 
 	i = 7;
 	while (i >= 0)
 	{
-		while (1 && usleep(100) != 0)
-		{
-			if (g_index == 1)
-			{
-				g_index = 0;
-				break ;
-			}
-		}
+		g_flag = 0;
 		if (((symbol >> i) & 1) == 1)
 			kill(pid, SIGUSR1);
 		else
 			kill(pid, SIGUSR2);
+		while (g_flag == 0)
+			pause();
+		usleep(50);
 		i--;
 	}
-	return (0);
 }
 
-int	send(char *text, int pid)
+void	send(char *text, int pid)
 {
-	int	i;	
-
-	i = 0;
-	while (text[i])
+	if (!text || !*text)
+		return ;
+	while (*text)
 	{
-		send_bi(text[i], pid);
-		i++;
+		send_bi(*text, pid);
+		text++;
 	}
-	send_bi('\n', pid);
-	return (0);
+	send_bi('\0', pid);
 }
 
 void	signal_handler(int signal)
 {
 	if (signal == SIGUSR1)
-		g_index = 1;
+		g_flag = 1;
 	if (signal == SIGUSR2)
 		ft_printf("Your message has been received !!!\n");
 }

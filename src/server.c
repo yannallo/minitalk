@@ -11,28 +11,29 @@
 /* ************************************************************************** */
 
 #include <signal.h>
-#include "../ft_printf/ft_printf.h"
-
-int	g_index = 0;
+#include "ft_printf.h"
 
 void	signal_handler(int signal, siginfo_t *info, void *context)
 {
-	int		binary;
-	char	received;
+	static int	bit = 0;
+	static int	binary = 0;
+	char		received;
 
-	if (g_index == 0)
-		binary = 0;
 	binary = binary << 1;
 	if (signal == SIGUSR1)
 		binary = binary | 1;
-	g_index++;
-	if (g_index == 8)
+	bit++;
+	if (bit == 8)
 	{
-		g_index = 0;
+		bit = 0;
 		received = (char)binary;
-		write(1, &received, 1);
-		if (received == '\n')
+		binary = 0;
+		if (received == '\0')
+		{
+			received = '\n';
 			kill(info->si_pid, SIGUSR2);
+		}
+		write(1, &received, 1);
 	}
 	kill(info->si_pid, SIGUSR1);
 	(void)context;
@@ -50,11 +51,12 @@ int	main(int argc, char **argv)
 	sa.sa_sigaction = signal_handler;
 	sa.sa_flags = SA_SIGINFO;
 	sigemptyset(&sa.sa_mask);
-	ft_printf("pid = %d\n", pid);
+	ft_printf("PID = %d\n", pid);
 	sigaction(SIGUSR1, &sa, NULL);
 	sigaction(SIGUSR2, &sa, NULL);
 	while (1)
 	{
+		pause();
 	}
 	return (0);
 }

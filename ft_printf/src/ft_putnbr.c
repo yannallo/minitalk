@@ -1,27 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putstr.c                                        :+:      :+:    :+:   */
+/*   ft_putnbr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yallo <yallo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/12/07 15:02:57 by yallo             #+#    #+#             */
-/*   Updated: 2022/12/20 11:19:50 by yallo            ###   ########.fr       */
+/*   Created: 2022/12/20 01:06:37 by yallo             #+#    #+#             */
+/*   Updated: 2023/12/14 16:09:27 by yallo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-void	ft_putstr(char *s, int *count)
+void	ft_putnbr(int nbr, int *count)
 {
-	size_t	i;
-
-	i = 0;
-	if (!s)
-		return (ft_putstr("(null)", count));
-	while (s[i])
+	if (nbr == INT_MIN)
 	{
-		ft_putchar(s[i], count);
-		i++;
+		ft_putstr("-2147483648", count);
+		return ;
 	}
+	if (nbr < 0)
+	{
+		ft_putchar('-', count);
+		nbr = -nbr;
+	}
+	ft_putnbr_base(nbr, "0123456789", count);
 }

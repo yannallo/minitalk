@@ -1,23 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putchar.c                                       :+:      :+:    :+:   */
+/*   ft_putstr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yallo <yallo@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/12/09 11:16:53 by yallo             #+#    #+#             */
-/*   Updated: 2022/12/19 13:38:36 by yallo            ###   ########.fr       */
+/*   Created: 2022/12/07 15:02:57 by yallo             #+#    #+#             */
+/*   Updated: 2023/10/20 01:05:11 by yallo            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-void	ft_putchar(int c, int *count)
+void	ft_putstr(char *s, int *count)
 {
-	if (*count == -1)
+	if (!s)
+	{
+		ft_putstr("(null)", count);
 		return ;
-	if (write(1, &c, 1) == -1)
-		*count = -1;
-	else
-		*count = *count + 1;
+	}
+	while (*s)
+	{
+		ft_putchar(*s, count);
+		s++;
+	}
 }
